@@ -39,8 +39,6 @@ else
     kubectl config set-credentials default --token=${KUBERNETES_TOKEN}
 fi
 
-
-
 if [ ! -z ${KUBERNETES_CERT} ]; then
   echo ${KUBERNETES_CERT} | base64 -d > ca.crt
   kubectl config set-cluster default --server=${KUBERNETES_SERVER} --certificate-authority=ca.crt
@@ -61,9 +59,11 @@ for DEPLOY in ${DEPLOYMENTS[@]}; do
   echo Deploying to $KUBERNETES_SERVER
   for CONTAINER in ${CONTAINERS[@]}; do
     if [[ ${PLUGIN_FORCE} == "true" ]]; then
+#      echo "kubectl -n ${PLUGIN_NAMESPACE} set image deployment/${DEPLOY} ${CONTAINER}=${PLUGIN_REPO}:${PLUGIN_TAG}FORCE"
       kubectl -n ${PLUGIN_NAMESPACE} set image deployment/${DEPLOY} \
         ${CONTAINER}=${PLUGIN_REPO}:${PLUGIN_TAG}FORCE
     fi
+#    echo "kubectl -n ${PLUGIN_NAMESPACE} set image deployment/${DEPLOY} ${CONTAINER}=${PLUGIN_REPO}:${PLUGIN_TAG} --record"
     kubectl -n ${PLUGIN_NAMESPACE} set image deployment/${DEPLOY} \
       ${CONTAINER}=${PLUGIN_REPO}:${PLUGIN_TAG} --record
   done
